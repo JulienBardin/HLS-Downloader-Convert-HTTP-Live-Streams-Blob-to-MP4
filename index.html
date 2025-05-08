@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS to MP4 Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .step {
+            margin-bottom: 30px;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            background-color: #f9f9f9;
+        }
+        .note {
+            padding: 10px;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>HLS to MP4 Converter</h1>
+    <p>This tool helps you download HTTP Live Streaming (HLS) content and convert it to MP4 format.</p>
+    
+    <div class="note">
+        <strong>Important:</strong> This tool is for educational purposes only. Please respect copyright laws and terms of service.
+    </div>
+    
+    <h2>Quick Start Guide</h2>
+    
+    <div class="step">
+        <h3>Step 1: Find the HLS Playlist</h3>
+        <p>To use this tool, first identify the HLS playlist URL:</p>
+        <ol>
+            <li>Open the web page containing the video</li>
+            <li>Open browser developer tools (F12 or right-click → Inspect)</li>
+            <li>Go to the Network tab</li>
+            <li>Filter results by "m3u8"</li>
+            <li>Play the video and look for playlist requests</li>
+        </ol>
+        <p>Or paste this script in the console to automatically find HLS playlists:</p>
+        <pre><code id="extract-playlist-script">// Load extract-hls-playlist.js here</code></pre>
+        <button onclick="copyToClipboard('extract-playlist-script')">Copy to Clipboard</button>
+    </div>
+    
+    <div class="step">
+        <h3>Step 2: Download TS Segment Files</h3>
+        <p>Once you have the playlist URL, use this script to download all TS files:</p>
+        <pre><code id="download-ts-script">// Load download-ts-files.js here</code></pre>
+        <button onclick="copyToClipboard('download-ts-script')">Copy to Clipboard</button>
+        <p class="note">If you get CORS errors, try downloading the playlist file manually first, then run the script against the local file.</p>
+    </div>
+    
+    <div class="step">
+        <h3>Step 3: Create Local Playlist</h3>
+        <p>Run the <code>create-local-playlist.sh</code> script to prepare a local playlist file:</p>
+        <pre><code>bash create-local-playlist.sh playlist.m3u8 playlist_local.m3u8</code></pre>
+    </div>
+    
+    <div class="step">
+        <h3>Step 4: Combine into MP4</h3>
+        <p>Finally, use FFmpeg to combine all the TS files into a single MP4:</p>
+        <pre><code>bash combine-ts-files.sh output.mp4</code></pre>
+        <p>Or run FFmpeg directly:</p>
+        <pre><code>ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -i playlist_local.m3u8 -c copy output.mp4</code></pre>
+    </div>
+    
+    <h2>Advanced Topics</h2>
+    
+    <h3>Understanding Blob URLs</h3>
+    <p>Many websites use blob URLs (<code>blob:https://example.com/...</code>) to prevent direct access to video content. These are just references to data loaded into memory via JavaScript, not actual file locations.</p>
+    
+    <h3>CORS Policies</h3>
+    <p>Cross-Origin Resource Sharing (CORS) restrictions may prevent browser scripts from accessing content from different domains. This is a security feature, but it can make downloading more difficult.</p>
+    
+    <script>
+        // Function to load the script contents
+        async function loadScripts() {
+            try {
+                const extractResponse = await fetch('js/extract-hls-playlist.js');
+                const extractScript = await extractResponse.text();
+                document.getElementById('extract-playlist-script').textContent = extractScript;
+                
+                const downloadResponse = await fetch('js/download-ts-files.js');
+                const downloadScript = await downloadResponse.text();
+                document.getElementById('download-ts-script').textContent = downloadScript;
+            } catch (error) {
+                console.error('Error loading scripts:', error);
+            }
+        }
+        
+        // Function to copy text to clipboard
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+        
+        // Load scripts when page loads
+        window.addEventListener('DOMContentLoaded', loadScripts);
+    </script>
+</body>
+</html> 
